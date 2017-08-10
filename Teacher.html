@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<!-- 必须（重要）引用jQuery文件 -->
+<script src="jquery.min.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!--  引入Semantic相关文件 -->
+<link rel="stylesheet" href="Semantic/semantic.min.css">
+<script type="text/javascript" src="Semantic/semantic.min.js"></script>
+
+<script type="text/javascript" src="teacher_list/teacher_list.js"></script>
+<script type="text/javascript" src="TeacherInfo.js"></script>
+<title>Teacher</title>
+<style media="screen">
+body{
+	::-webkit-scrollbar{width:0px};
+}
+</style>
+</head>
+<body>
+<div class="page-header"></div>
+<div class="ui top content segment">
+	<div class="ui left icon action mini input">
+		<i class="search icon"></i>
+		<input id="serach_input" type="text" placeholder="输入教授姓名检索教授">
+		<div class="ui blue basic button" id="search_by_name" >搜索</div>
+		<a name="top_search" style="display:none;"></a>
+	</div>
+	<div class="ui selection dropdown" style="margin-top:1%;" id="apart_dropdown">
+	  <input type="hidden" name="apartment">
+	  <i class="dropdown icon"></i>
+	  <div class="default text">选择院系检索教授</div>
+	  <div class="menu">
+		<div class="item" data-value='0'>所有院系</div>
+		<div class="item" data-value='1'>生物系</div>
+		<div class="item" data-value='4'>数学系</div>
+		<div class="item" data-value='10'>金融系</div>
+		<div class="item" data-value='11'>物理系</div>
+		<div class="item" data-value='13'>化学系</div>
+		<div class="item" data-value='0'>公共基础课部</div>
+		<div class="item" data-value='2'>海洋科学与工程系</div>
+		<div class="item" data-value='3'>环境科学与工程学院</div>
+		<div class="item" data-value='5'>材料科学与工程系</div>
+		<div class="item" data-value='6'>电子与电气工程系</div>
+		<div class="item" data-value='7'>生物医学工程系</div>
+		<div class="item" data-value='14'>机械与能源工程系</div>
+		<div class="item" data-value='15'>力学与航空航天工程系</div>
+		<div class="item" data-value='16'>计算机科学与工程系</div>
+		<div class="item" data-value='17'>其他</div>
+	  </div>
+	</div>
+	<br />
+	<div id="message_num">
+	</div>
+</div>
+<div id="teacher" value="0">
+
+
+</div>
+<div style="position:fixed;bottom:1%;right:1%;z-index:10;">
+<button class="ui icon button" id="scroll_top"><i class="angle double up icon"></i></a></button>
+</div>
+<script language="javascript">
+$(document).ready(function(e) {
+
+	function fn1(id)
+	{
+		console.log("Congratulation! Bind your Cilck Function Successly."+id);
+		}
+	function fn2(id)
+	{
+		console.log("2222Congratulation! Bind your Cilck Function Successly."+id);
+		}
+	function urlfn(id)
+	{
+		console.log(id);
+		self.location=data[id]["detail_url"];
+		}
+	/* 绑定写在html页面的组件的事件 */
+	$('#apart_dropdown').dropdown({action: 'activate',
+	onChange: function(value, text, $selectedItem) {
+				search_teacher_by_apart(text,Teacherdata,fn1,fn2,urlfn);
+	}
+	 });
+	$("#search_by_name").click(function(event) {
+		var name=$("#serach_input").val();
+		$('#apart_dropdown').dropdown('set selected','所有院系');
+	  $("#serach_input").val(name);
+		search_teacher_by_name(name,Teacherdata,fn1,fn2,urlfn);
+	});
+	$('#scroll_top').click(function(event){
+		$("html,body").animate({scrollTop:0}, 800);
+	});
+
+	/* 回车搜索事件绑定 */
+	$("#serach_input").keypress(function(e) {
+	       var eCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+	        if (eCode == 13){
+	            $("#search_by_name").trigger('click');
+	        }
+	});
+
+	//t=1使用静态数据 t=其他值使用动态数据（从服务器获取最新数据
+	var t=1;
+	if(t==1)
+	{
+		var data=Teacherdata;
+		$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);
+	}
+	else{
+	var url = "http://sustechapp.com:4000";
+	var ajaxCallUrl = url + "/info/getTeacherInfo/";
+        $.ajax({
+        cache: true,
+        type: "POST",
+        url:ajaxCallUrl,
+        data:{},
+        async: false,
+        timeout : 1000,
+        error: function(request) {
+//            alert("网络错误！");
+            return;
+        },
+        success: function(data) {
+            data=JSON.parse(data);
+			$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);
+        }
+        });
+	}
+});
+
+/* 按名字查找教师并刷新教师列表 */
+function search_teacher_by_name(name,data,fn1,fn2,urlfn)
+{
+	if(name==""){$("#message_num").empty();$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);return;}
+	var searchdata=[];
+	var goodsearch=[];
+	var num=name.length;
+	var same=0;
+	for (var i = 0; i < data.length; i++) {
+		same=0;
+		if(data[i]["name"]==name)goodsearch.push(data[i]);
+		for (var j = 0; j < name.length; j++) {
+			if(data[i]["name"].indexOf(name[j])>-1)
+			{same++;}
+		}
+	if(same>0)
+	{
+		searchdata.push(data[i]);
+	}
+	}
+	if(goodsearch.length>0)
+	{
+		$("#message_num").empty();
+		$("#message_num").append("<div class='ui message'><p>共有"+goodsearch.length+"个符合条件的信息</p></div>");
+		$("#teacher").teacher_list([goodsearch,fn1,fn2,urlfn,1]);
+	}
+	else{
+	if(searchdata.length>0)
+	{
+		$("#message_num").empty();
+		$("#message_num").append("<div class='ui message'><p>共有"+searchdata.length+"个符合条件的信息</p></div>");
+		$("#teacher").teacher_list([searchdata,fn1,fn2,urlfn,1]);}
+	else{
+		$("#message_num").empty();
+		$("#message_num").append("<div class='ui message'><p>没有符合条件的检索信息</p></div>");
+	}
+	}
+}
+/* 按院系查找教师并刷新教师列表 */
+
+function search_teacher_by_apart(apart,data,fn1,fn2,urlfn)
+{
+$("#serach_input").val("");
+function in_array(searchString,array) {
+  for (i=0;i<array.length;i++) {
+    if ( searchString == array[i] ) return true;
+  }
+  return false;
+ }
+		if(apart==""){$("#message_num").empty();$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);return;}
+		newdata=[];
+		var apartrows=["生物系","数学系","金融系","物理系","化学系","公共基础课部","海洋科学与工程系","环境科学与工程学院","材料科学与工程系","电子与电气工程系","生物医学工程系","机械与能源工程系","力学与航空航天工程系","计算机科学与工程系"];
+		if(apart!="其他")
+		{
+			if(apart=="所有院系"){$("#message_num").empty();$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);return;}
+
+			var num=apart.length;
+			if(num>=5)
+			{
+			var aimnum=0;
+			for (var index in data) {
+				aimnum=0;
+			for (var i = 0; i < apart.length; i++) {
+				aimnum=data[index]["apartment"].indexOf(apart[i])>-1?++aimnum:aimnum;
+			}
+			if(aimnum>=(num-1)) newdata.push(data[index]);
+		}
+	}else{
+		for (var index in data) {
+			if(data[index]["apartment"]==apart)
+			{newdata.push(data[index]);}
+		}
+	}
+		}
+		else{
+			for (var index in data) {
+					if(in_array(data[index]["apartment"],apartrows)==false)
+					{newdata.push(data[index]);}
+				}
+			}
+		if(newdata.length>0)
+		{
+			$("#message_num").empty();
+			$("#message_num").append("<div class='ui message'><p>共有"+newdata.length+"个符合条件的信息</p></div>");
+			$("#teacher").teacher_list([newdata,fn1,fn2,urlfn,1]);
+		}else{
+			$("#message_num").empty();
+			$("#message_num").append("<div class='ui message'><p>没有符合条件的检索信息</p></div>")
+		}
+}
+
+
+/* 获取院系option的函数 */
+function getGoodApart()
+{
+//var str='<div class="item" data-value="0">生物系</div><div class="item" data-value="1">数学系</div><div class="item" data-value="2">金融系</div><div class="item" data-value="3">物理系</div><div class="item" data-value="4">化学系</div><div class="item" data-value="5">公共基础课部</div><div class="item" data-value="6">海洋科学与工程系</div><div class="item" data-value="7">环境科学与工程学院</div><div class="item" data-value="8">材料科学与工程系</div><div class="item" data-value="9">电子与电气工程系</div><div class="item" data-value="10">生物医学工程系</div><div class="item" data-value="11">机械与能源工程系</div><div class="item" data-value="12">力学与航空航天工程系</div><div class="item" data-value="13">计算机科学与工程系</div>';
+	var str="";
+	var s=[];
+	$(".menu > .item").each(function(index, el) {
+	//str+='<div class="item" data-value=\"'+index+'\">'+$(el).context.innerText+'</div>';
+	s.push($(el).context.innerText);
+	});
+	str+="[";
+	for (var i = 0; i < s.length; i++) {
+		str+="\""+s[i]+"\",";
+	}
+	str+="]";
+	return str;
+}
+/* 获取院系名称的函数（去重） */
+function getApartmentList(data){
+var apart=[],al,flag;
+for(var ee in data)
+{
+	al=apart.length;
+	flag=true;
+	if(al>0)
+	{
+		for(var t in apart)
+		{
+			flag=apart[t]==data[ee]["apartment"]?false:flag;
+		}
+	}
+	if(flag)
+	apart.push(data[ee]["apartment"]);
+}
+var apstr="";
+for(var ii in apart)
+{
+	apstr+="<div class=\"item\" data-value='"+ii+"'>"+apart[ii]+"</div>";
+}
+return apstr;
+}
+/* 获取静态数据的函数 */
+function getStaticData(data){
+var str="[";
+for(var i in data)
+{
+	str+="{";
+	for(var j in data[i])
+	{
+		str+="'"+j+"':'"+data[i][j]+"',";
+	}
+	str+="},";
+}
+str+="]";
+
+}
+</script>
+</body>
+</html>
