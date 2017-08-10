@@ -63,8 +63,6 @@ body{
 	</div>
 </div>
 <div id="teacher" value="0">
-
-
 </div>
 <div style="position:fixed;bottom:1%;right:1%;z-index:10;">
 <button class="ui icon button" id="scroll_top"><i class="angle double up icon"></i></a></button>
@@ -117,8 +115,8 @@ $(document).ready(function(e) {
 		$("#teacher").teacher_list([data,fn1,fn2,urlfn,0]);
 	}
 	else{
-	var url = "http://sustechapp.com:4000";
-	var ajaxCallUrl = url + "/info/getTeacherInfo/";
+	var url = "这里填写后端url";
+	var ajaxCallUrl = url + "这里填写函数名";
         $.ajax({
         cache: true,
         type: "POST",
@@ -229,7 +227,7 @@ function in_array(searchString,array) {
 		}
 }
 
-
+/* 以下为对插件没有用的处理我自己的数据的函数 */
 /* 获取院系option的函数 */
 function getGoodApart()
 {
